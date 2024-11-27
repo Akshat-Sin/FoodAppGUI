@@ -1,0 +1,85 @@
+/* styles.css */
+
+
+.dashboard {
+    -fx-display: flex;
+    -fx-width: 100%;
+    -fx-height: 100vh;
+}
+
+.sidebar {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+    -fx-padding: 20px 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 2, 0);
+    -fx-alignment: center;
+    -fx-spacing: 10px;
+    -fx-display: inline-block;
+}
+
+.sidebar h2 {
+    -fx-font-size: 1.8em;
+    -fx-margin-bottom: 20px;
+    -fx-text-fill: white;
+}
+
+.sidebar ul {
+    -fx-padding: 0;
+    -fx-list-style: none;
+    -fx-width: 100%;
+}
+
+.sidebar li {
+    -fx-margin: 10px 0;
+}
+
+.sidebar a {
+    -fx-text-decoration: none;
+    -fx-text-fill: white;
+    -fx-font-size: 1.2em;
+    -fx-display: inline-flex;
+    -fx-alignment: center;
+    -fx-spacing: 10px;
+    -fx-padding: 12px 15px;
+    -fx-background-color: #28a745;
+    -fx-border-radius: 5px;
+    -fx-transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.sidebar a:hover {
+    -fx-background-color: #218838;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 4);
+}
+
+.logout-btn {
+    -fx-background-color: #dc3545;
+    -fx-text-fill: white;
+    -fx-border-radius: 5px;
+    -fx-padding: 10px 15px;
+    -fx-font-size: 1em;
+    -fx-cursor: hand;
+    -fx-transition: background-color 0.3s;
+    -fx-margin-top: auto;
+}
+
+.logout-btn:hover {
+    -fx-background-color: #c82333;
+}
+
+.content {
+    -fx-flex: 1;
+    -fx-padding: 40px;
+    -fx-background-color: white;
+    -fx-border-radius: 0 8px 8px 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, -2, 0);
+}
+
+.content h1 {
+    -fx-font-size: 2em;
+    -fx-text-fill: #333;
+}
+
+.content p {
+    -fx-font-size: 1.2em;
+    -fx-text-fill: #555;
+}

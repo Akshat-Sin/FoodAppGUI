@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" stylesheets="@Dashboard.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ap4.Menu_cont">
+   <children>
+      <Pane layoutX="148.0" prefHeight="65.0" prefWidth="452.0" style="-fx-background-color: lightblue;" styleClass="dashboard">
+         <children>
+            <Label layoutX="32.0" layoutY="14.0" prefHeight="17.0" prefWidth="389.0" text="            Menu">
+               <font>
+                  <Font name="System Bold" size="32.0" />
+               </font>
+            </Label>
+         </children></Pane>
+      <Pane prefHeight="500.0" prefWidth="148.0" style="-fx-background-color: lightblue;" styleClass="content">
+         <children>
+            <Button layoutX="26.0" layoutY="448.0" mnemonicParsing="false" onMouseClicked="#back" prefHeight="22.0" prefWidth="77.0" styleClass="logout-btn" text="Logout" />
+            <Button layoutX="26.0" layoutY="70.0" mnemonicParsing="false" onMouseClicked="#Menu" prefHeight="64.0" prefWidth="77.0" styleClass="sidebar" text="Menu">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Button>
+            <Button layoutX="26.0" layoutY="148.0" mnemonicParsing="false" onMouseClicked="#Cart" prefHeight="64.0" prefWidth="77.0" styleClass="sidebar" text="Cart">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Button>
+            <Button layoutX="26.0" layoutY="226.0" mnemonicParsing="false" onMouseClicked="#Order" prefHeight="64.0" prefWidth="77.0" styleClass="sidebar" text="Order">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Button>
+            <Button layoutX="26.0" layoutY="373.0" mnemonicParsing="false" onMouseClicked="#VIP" prefHeight="64.0" prefWidth="77.0" styleClass="sidebar" text="VIP">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Button>
+            <Button layoutX="26.0" layoutY="302.0" mnemonicParsing="false" onMouseClicked="#Review" prefHeight="64.0" prefWidth="77.0" styleClass="sidebar" text="Review">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
+         </children>
+      </Pane>
+      <Pane layoutX="148.0" layoutY="92.0" prefHeight="407.0" prefWidth="452.0">
+         <children>
+            <TableView fx:id="menuTable" layoutX="1.0" layoutY="43.0" prefHeight="366.0" prefWidth="452.0">
+              <columns>
+                <TableColumn fx:id="serialNoColumn" prefWidth="49.60003662109375" text="S No." />
+                <TableColumn fx:id="nameColumn" prefWidth="181.59999084472656" text="Item Name" />
+                  <TableColumn fx:id="priceColumn" prefWidth="72.0" text="Price" />
+                  <TableColumn fx:id="categoryColumn" prefWidth="88.0" text="Category" />
+                  <TableColumn fx:id="quantityColumn" prefWidth="60.800048828125" text="Quantity" />
+              </columns>
+            </TableView>
+            <Label layoutX="14.0" layoutY="5.0" prefHeight="25.0" prefWidth="123.0" text="Search Item Category" />
+            <TextField fx:id="searchByCategoryField" layoutX="144.0" layoutY="5.0" />
+            <Button layoutX="307.0" layoutY="5.0" mnemonicParsing="false" onMouseClicked="#searchByCategory" text="Search" />
+         </children></Pane>
+      <Text layoutX="30.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="64.5367431640625" />
+      <Label text="Label" />
+      <Label layoutX="167.0" layoutY="65.0" prefHeight="25.0" prefWidth="123.0" text="Search Item Name" />
+      <TextField fx:id="searchByNameField" layoutX="290.0" layoutY="65.0" />
+      <Button layoutX="454.0" layoutY="65.0" mnemonicParsing="false" onMouseClicked="#searchByName" text="Search" />
+   </children>
+</Pane>
