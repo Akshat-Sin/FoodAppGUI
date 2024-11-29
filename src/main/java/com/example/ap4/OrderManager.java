@@ -6,9 +6,9 @@ import java.util.*;
 public class OrderManager implements Serializable {
     private static final long serialVersionUID = 1L;
     private static Map<String, MenuItem> menu = new HashMap<>();
-    private List<Order> completedOrders = new ArrayList<>(); // Store completed or canceled orders
-    private List<Order> deniedOrders = new ArrayList<>(); // Store denied orders separately
-    private static PriorityQueue<Order> orders = new PriorityQueue<>(); // PriorityQueue
+    private static List<Order> completedOrders = Order_file.loadCompOrders(); // Store completed or canceled orders
+    private static List<Order> deniedOrders =Order_file.loadDenOrders(); // Store denied orders separately
+    private static PriorityQueue<Order> orders = Order_file.loadPendOrders(); // PriorityQueue
     private Map<String, List<Review>> reviews = new HashMap<>();
 
 
@@ -22,6 +22,7 @@ public class OrderManager implements Serializable {
     }
 
     public static PriorityQueue<Order> getOrders() {
+        orders=Order_file.loadPendOrders();
         return orders;
     }
 
@@ -41,23 +42,26 @@ public class OrderManager implements Serializable {
     }
 
     // Update the status of a specific order
-    public boolean updateOrderStatus(int orderId, String newStatus) {
-        for (Order order : orders) {
-            if (order.getOrderId() == orderId) {
-                order.setStatus(newStatus);
-                return true;
-            }
-        }
-        return false;
-    }
+//    public boolean updateOrderStatus(int orderId, String newStatus) {
+//        for (Order order : orders) {
+//            if (order.getOrderId() == orderId) {
+//                order.setStatus(newStatus);
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     // Process a refund for a specific order
     public void processRefund(int orderId) {
+        orders=Order_file.loadPendOrders();
         for (Order order : orders) {
             if (order.getOrderId() == orderId) {
                 if (order.processRefund()) {
                     completedOrders.add(order);
+                    Order_file.saveCompOrders(completedOrders);
                     orders.remove(order);
+                    Order_file.savePendOrder(orders);
                     System.out.println("Refund successful for Order ID " + orderId);
                 } else {
                     System.out.println("Refund cannot be processed again for Order ID " + orderId);
@@ -70,6 +74,7 @@ public class OrderManager implements Serializable {
 
     // Generate daily sales report
     public String generateDailyReport() {
+        completedOrders=Order_file.loadCompOrders();
         double totalSales = 0;
         Map<String, Integer> itemCounts = new HashMap<>();
         int totalOrders = orders.size();
@@ -199,6 +204,7 @@ public class OrderManager implements Serializable {
 
     // Display pending orders with priority: VIP orders first
     public void displayPendingOrders() {
+        orders=Order_file.loadPendOrders();
         System.out.println("\nPending Orders:");
         for (Order order : orders) {
             if (!order.getStatus().equals("Delivered")) {
@@ -212,6 +218,7 @@ public class OrderManager implements Serializable {
 
     // Update the next order status in the queue based on priority
     public void updateNextOrderStatus() {
+        orders=Order_file.loadPendOrders();
         if(orders.isEmpty()){
             System.out.println("All orders are up to date.");
         }
@@ -221,10 +228,13 @@ public class OrderManager implements Serializable {
             if (nextOrder.getStatus().equals("Denied")) {
                 orders.poll();
                 deniedOrders.add(nextOrder);
+                Order_file.saveDenOrders(deniedOrders);
+                Order_file.savePendOrder(orders);
                 continue;
             }
             if (nextOrder.getStatus().equals("Refunded")) {
                 orders.poll(); //
+                Order_file.savePendOrder(orders);
                 continue;
             }
 
@@ -232,11 +242,14 @@ public class OrderManager implements Serializable {
             nextOrder.updateStatusToNext();
             System.out.println("Updated Order ID " + nextOrder.getOrderId() + " to status: " + nextOrder.getStatus());
 
+
             // Move order to completedOrders if fully delivered
             if (nextOrder.getStatus().equals("Delivered")) {
                 orders.poll();
                 completedOrders.add(nextOrder);
+                Order_file.saveCompOrders(completedOrders);
             }
+            Order_file.savePendOrder(orders);
             break; // Only update the next order in line
         }
     }
@@ -249,17 +262,21 @@ public class OrderManager implements Serializable {
     }
 
     // View status of all current orders for a customer
-    public void viewOrderStatus() {
+    public void viewOrderStatus(Customer customer) {
+        orders=Order_file.loadPendOrders();
         System.out.println("\nCurrent Orders:");
         for (Order order : orders) {
-            System.out.println(order);
-            order.displayItemsInOrder();
-            System.out.println();
+            if(order.getCustomer()==customer) {
+                System.out.println(order);
+                order.displayItemsInOrder();
+                System.out.println();
+            }
         }
     }
 
     // Cancel a specific order
     public void cancelOrder(int orderId) {
+        orders=Order_file.loadPendOrders();
         for (Order order : orders) {
             if (order.getOrderId() == orderId && order.getStatus().equals("Preparing")) {
                 order.cancelOrder(this);
@@ -280,37 +297,40 @@ public class OrderManager implements Serializable {
 
 
     // Reorder a past order by adding items to the customer's cart based on availability
-    public void reorder(int orderId, Map<MenuItem, Integer> cart, Scanner scanner) {
+    public void reorder(Customer customer,int orderId, Map<MenuItem, Integer> cart, Scanner scanner) {
+        completedOrders=Order_file.loadCompOrders();
         for (Order pastOrder : completedOrders) {
-            if (pastOrder.getOrderId() == orderId) {
-                System.out.println("Reordering items from Order ID " + orderId + "...");
+            if(pastOrder.getCustomer()==customer) {
+                if (pastOrder.getOrderId() == orderId) {
+                    System.out.println("Reordering items from Order ID " + orderId + "...");
 
-                // Display original order details
-                pastOrder.displayItemsInOrder();
+                    // Display original order details
+                    pastOrder.displayItemsInOrder();
 
-                // Add items to cart based on availability
-                for (Map.Entry<MenuItem, Integer> entry : pastOrder.getItems().entrySet()) {
-                    MenuItem item = entry.getKey();
-                    int quantityOrdered = entry.getValue();
-                    int availableQuantity = item.getAvailability();
+                    // Add items to cart based on availability
+                    for (Map.Entry<MenuItem, Integer> entry : pastOrder.getItems().entrySet()) {
+                        MenuItem item = entry.getKey();
+                        int quantityOrdered = entry.getValue();
+                        int availableQuantity = item.getAvailability();
 
-                    // Check if the item is available in sufficient quantity
-                    if (availableQuantity > 0 ) {
-                        if(quantityOrdered>availableQuantity){
-                            System.out.println("Quantity ordered of the item: "+ item.getName()+" is not sufficiently available in the stock.");
-                            continue;
+                        // Check if the item is available in sufficient quantity
+                        if (availableQuantity > 0) {
+                            if (quantityOrdered > availableQuantity) {
+                                System.out.println("Quantity ordered of the item: " + item.getName() + " is not sufficiently available in the stock.");
+                                continue;
+                            }
+                            cart.put(item, cart.getOrDefault(item, 0) + quantityOrdered);
+                            item.decreaseAvailability(quantityOrdered);
+
+                        } else {
+                            System.out.println("Item " + item.getName() + " is currently out of stock.");
                         }
-                        cart.put(item, cart.getOrDefault(item, 0) + quantityOrdered);
-                        item.decreaseAvailability(quantityOrdered);
-
-                    } else {
-                        System.out.println("Item " + item.getName() + " is currently out of stock.");
                     }
-                }
 
-                System.out.println("Items from the previous order have been added to your cart based on availability.");
-                System.out.println("Now you need to checkout and place your order.");
-                return;
+                    System.out.println("Items from the previous order have been added to your cart based on availability.");
+                    System.out.println("Now you need to checkout and place your order.");
+                    return;
+                }
             }
         }
         System.out.println("Order ID not found in history.");
@@ -362,23 +382,29 @@ public class OrderManager implements Serializable {
     }
 
     // Display completed, denied, and canceled orders with item details
-    public void viewOrderHistory() {
+    public void viewOrderHistory(Customer customer) {
+        completedOrders=Order_file.loadCompOrders();
+        deniedOrders=Order_file.loadDenOrders();
         System.out.println("\nOrder History:");
 
         // Display completed orders
         System.out.println("\nCompleted Orders:");
         for (Order order : completedOrders) {
-            if (order.getStatus().equals("Delivered")) {
-                System.out.println(order);
-                order.displayItemsInOrder();
+            if(order.getCustomer()==customer) {
+                if (order.getStatus().equals("Delivered")) {
+                    System.out.println(order);
+                    order.displayItemsInOrder();
+                }
             }
         }
 
         System.out.println("\nRefunded Orders:");
         for (Order order : completedOrders) {
-            if (order.getStatus().equals("Refunded")) {
-                System.out.println(order);
-                order.displayItemsInOrder();
+            if(order.getCustomer()==customer) {
+                if (order.getStatus().equals("Refunded")) {
+                    System.out.println(order);
+                    order.displayItemsInOrder();
+                }
             }
         }
         
@@ -386,12 +412,15 @@ public class OrderManager implements Serializable {
         // Display denied orders
         System.out.println("\nDenied Orders:");
         for (Order order : deniedOrders) {
-            System.out.println(order);
-            order.displayItemsInOrder();
+            if (order.getCustomer() == customer) {
+                System.out.println(order);
+                order.displayItemsInOrder();
+            }
         }
     }
     // Update only active orders containing the removed item to "Denied"
     private void denyActiveOrdersContainingItem(MenuItem removedItem) {
+        orders=Order_file.loadPendOrders();
         System.out.println(orders.size());
         for(Order o:orders) {
 
@@ -407,7 +436,9 @@ public class OrderManager implements Serializable {
                 o.setStatus("Denied");
                 restoreItemsToStock(itemsToRestore); // Restore unaffected items to stock
                 deniedOrders.add(o); // Move the o to denied list
+                Order_file.saveDenOrders(deniedOrders);
                 orders.remove(o);
+                Order_file.savePendOrder(orders);
                 System.out.println("Order ID " + o.getOrderId() + " denied due to unavailable item.");
 
             }

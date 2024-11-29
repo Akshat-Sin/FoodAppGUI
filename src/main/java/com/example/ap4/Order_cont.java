@@ -110,13 +110,13 @@ public class Order_cont {
 
     public void status(MouseEvent mouseEvent) {
         stage.hide();
-        customer.orderManager.viewOrderStatus();
+        customer.orderManager.viewOrderStatus(customer);
         stage.show();
     }
 
     public void viewpast(MouseEvent mouseEvent) {
         stage.hide();
-        customer.orderManager.viewOrderHistory();
+        customer.orderManager.viewOrderHistory(customer);
         stage.show();
     }
 
@@ -140,11 +140,11 @@ public class Order_cont {
         }
         System.out.println("Enter Order ID to reorder:");
         int orderId = ByteMe.getUserOption(scanner);
-        customer.orderManager.reorder(orderId, customer.cart, scanner); // Add items to cart based on availability
+        customer.orderManager.reorder(customer,orderId, customer.cart, scanner); // Add items to cart based on availability
 
         // Show the original order details alongside the current cart
         System.out.println("\nOriginal Order Details:");
-        customer.orderManager.viewOrderHistory();
+        customer.orderManager.viewOrderHistory(customer);
 
         System.out.println("\nPlease review your cart and adjust items if necessary.");
         customer.viewCart(scanner);

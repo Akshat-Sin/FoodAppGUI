@@ -46,9 +46,9 @@ public class c_signup {
     }
 
     public void CustomerLogin(MouseEvent mouseEvent) throws IOException {
-        HashMap<String,Customer> abc=file.loadCredentials();
+        HashMap<String,Customer> abc= Cust_file.loadCredentials();
         abc.put(email.getText(),new Customer(username.getText(),email.getText(),password.getText(),new OrderManager()));
-        file.saveCredentials(abc);
+        Cust_file.saveCredentials(abc);
         System.out.println(username.getText()+" "+email.getText()+" "+password.getText());
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("Screen3.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 500);

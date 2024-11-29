@@ -1,11 +1,7 @@
 package com.example.ap4;
 
 import java.io.Serializable;
-import java.util.Scanner;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Customer implements Customer_interface, Serializable {
     private static final long serialVersionUID = 1L;
@@ -236,9 +232,11 @@ public class Customer implements Customer_interface, Serializable {
             String specialRequest = scanner.nextLine();
 
             // Create and add the order
-            Order order = new Order(new HashMap<MenuItem, Integer>(cart), customerType, specialRequest, address, paymentMethod + ": " + paymentDetails,finalAmount);
+            Order order = new Order(this,new HashMap<MenuItem, Integer>(cart), customerType, specialRequest, address, paymentMethod + ": " + paymentDetails,finalAmount);
+            PriorityQueue<Order> t=Order_file.loadPendOrders();
             orderManager.addOrder(order);
-            file.savePendOrder(OrderManager.getOrders());
+            t.add(order);
+            Order_file.savePendOrder(t);
         }
         catch (NonIntegerInputException e){
             System.out.println(e.getMessage());
@@ -343,16 +341,19 @@ public class Customer implements Customer_interface, Serializable {
 
                 switch (choice) {
                     case 1:
-                        orderManager.viewOrderStatus();
+                        orderManager.viewOrderStatus(this);
                         break;
                     case 2:
-                        List<Order> pendingOrders = orderManager.getPendingOrders();
+                        PriorityQueue<Order> pendingOrders = Order_file.loadPendOrders();
                         for(Order o:pendingOrders){
-                            System.out.println(o);
+                            if(o.getCustomer()==this) {
+                                System.out.println(o);
+                            }
                         }
                         System.out.println("Enter Order ID to cancel:");
                         int orderId = ByteMe.getUserOption(scanner);
                         orderManager.cancelOrder(orderId);
+//                        Order_file.saveCompOrders(orderManager.getCompletedOrders());
                         break;
                     case 3:
                         tracking = false;
@@ -380,20 +381,22 @@ public class Customer implements Customer_interface, Serializable {
 
                 switch (choice) {
                     case 1:
-                        orderManager.viewOrderHistory();
+                        orderManager.viewOrderHistory(this);
                         break;
                     case 2:
-                        List<Order> orders = orderManager.getCompletedOrders();
+                        List<Order> orders = Order_file.loadCompOrders();
                         for(Order o:orders){
-                            System.out.println(o);
+                            if(o.getCustomer()==this) {
+                                System.out.println(o);
+                            }
                         }
                         System.out.println("Enter Order ID to reorder:");
                         int orderId = ByteMe.getUserOption(scanner);
-                        orderManager.reorder(orderId, cart, scanner); // Add items to cart based on availability
+                        orderManager.reorder(this,orderId, cart, scanner); // Add items to cart based on availability
 
                         // Show the original order details alongside the current cart
                         System.out.println("\nOriginal Order Details:");
-                        orderManager.viewOrderHistory();
+                        orderManager.viewOrderHistory(this);
 
                         System.out.println("\nPlease review your cart and adjust items if necessary.");
                         viewCart(scanner); // Allow the customer to review and modify the cart
@@ -479,9 +482,11 @@ public class Customer implements Customer_interface, Serializable {
     // Check if the customer has ordered an item before
     private boolean hasOrderedItem(String itemName) {
         for (Order order : orderManager.getCompletedOrders()) { // Assuming completedOrders is accessible
-            for (MenuItem item : order.getItems().keySet()) { // Loop through each item in the order
-                if (item.getName().equals(itemName)) { // Compare by item name
-                    return true;
+            if(order.getCustomer()==this) {
+                for (MenuItem item : order.getItems().keySet()) { // Loop through each item in the order
+                    if (item.getName().equals(itemName)) { // Compare by item name
+                        return true;
+                    }
                 }
             }
         }

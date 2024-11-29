@@ -11,6 +11,7 @@ import java.util.Map;
 public class Order implements Serializable,Comparable<Order> {
     @Serial
     private static final long serialVersionUID=1L;
+    private Customer customer;
     private static int idCounter = 1; // Auto-increment ID for each order
     private int orderId;
     private Map<MenuItem, Integer> items; // MenuItem and quantity
@@ -21,10 +22,11 @@ public class Order implements Serializable,Comparable<Order> {
     private String paymentMethod;
     private int totalAmount;
 
-    public Order(Map<MenuItem, Integer> items, String customerType, String specialRequest, String deliveryAddress, String paymentMethod,int amount) {
+    public Order(Customer customer,Map<MenuItem, Integer> items, String customerType, String specialRequest, String deliveryAddress, String paymentMethod,int amount) {
         this.orderId = idCounter++;
         this.items = items;
         this.customerType = customerType;
+        this.customer=customer;
         this.specialRequest = specialRequest;
         this.deliveryAddress = deliveryAddress;
         this.paymentMethod = paymentMethod;
@@ -49,6 +51,10 @@ public class Order implements Serializable,Comparable<Order> {
     }
     public int getOrderId() {
         return orderId;
+    }
+
+    public Customer getCustomer() {
+        return customer;
     }
 
     public String getSpecialRequest() {

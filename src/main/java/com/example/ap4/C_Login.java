@@ -58,7 +58,7 @@ public class C_Login {
     }
 
     public void c_dashboard(MouseEvent mouseEvent) throws IOException {
-        HashMap<String,Customer> abc=file.loadCredentials();
+        HashMap<String,Customer> abc= Cust_file.loadCredentials();
         if(abc.containsKey(email.getText()) && abc.get(email.getText()).getPassword().equals(password.getText()) ) {
             System.out.println("Login Successful.");
 

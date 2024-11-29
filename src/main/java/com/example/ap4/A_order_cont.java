@@ -7,11 +7,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-import java.util.List;
 import java.util.PriorityQueue;
 import java.io.IOException;
 import java.util.Scanner;
@@ -33,7 +31,7 @@ public class A_order_cont {
     private TableColumn<Order, String> specialRequestColumn;
 
 
-    private PriorityQueue<Order> ordersQueue=file.loadPendOrders();
+    private PriorityQueue<Order> ordersQueue= Order_file.loadPendOrders();
 
 
     public void setStage(Stage stage) {
@@ -76,8 +74,7 @@ public class A_order_cont {
 
     private void displayOrderItems(MouseEvent a) {
         Order order=orderTable.getSelectionModel().getSelectedItem();
-        if(order==null){
-            System.out.println("srthn");return;}
+
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("A_order_details.fxml"));
         Scene scene = null;
         try {
