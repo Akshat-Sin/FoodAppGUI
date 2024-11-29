@@ -26,6 +26,21 @@ This project is a JavaFX-based application that allows users to manage and view 
    - Proper layout handling using `VBox` for a clean and user-friendly interface.
 
 ---
+## Assumptions
+
+- *Many admins can signup and login in app using their e-mail and password.
+- The admin can update the status of first prior order only with VIP orders at first.
+- For a non-VIP customer, there is a delivery fee of Rs.5.
+- For a VIP customer, there is no delivery fee.
+- Any customer can only cancel their order during or before processing stage, after that it cannot be cancelled. 
+- Admin can only refund the orders which are Cancelled by customer or Completed(Delivered).
+- Customer can reorder any of his previous order that is either completed , cancelled or refunded.
+- Customer and admin both are identified uniquely by their respective emails.
+- Item is identified uniquely by their name.
+- Order is identified uniquely by their orderID.
+- Customer can only add review for items that he/she has ordered and delivered or (only for completed orders).
+- A customer's review is anonymous.
+- A customer can submit any number of reviews for an item.
 
 ## New Classes Added
 
@@ -34,6 +49,17 @@ This project is a JavaFX-based application that allows users to manage and view 
    - Uses `SimpleStringProperty` for the item name and `SimpleIntegerProperty` for the quantity.
    - Facilitates direct integration with the `TableView`.
 
+2. **`Cust_file` Class:**
+   - Makes a `cust_cred.ser` file.
+   - Loads and saves credentials of a customer in this file.
+
+1. **`Order_file` Class:**
+   - Makes a `pend_order.ser` file.
+   - Loads and saves credentials of a customer in this file.
+   - Makes a `CompOrders_data.ser` file.
+   - Loads and saves total completed orders of all in this file. 
+   - Makes a `DeniedOrders_data.ser` file.
+   - Loads and saves total denied orders of all in this file.  
 ---
 
 ## Key Features Implemented
